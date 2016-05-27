@@ -1,5 +1,6 @@
 #include "build_kernel.h"
 #include "patch_kernel.h"
+#include <stdio.h>
 
 static char *file_contents(const char *filename, int *length)
 {
@@ -104,10 +105,103 @@ bool needs_bfi_patch(build_kernel_data *data)
     return false;
 }
 
-cl_program build_opencl_kernel(build_kernel_data *data, const char *filename)
+
+typedef struct _algorithm_get_settings_t {
+	const char *algo; 
+	bool inverter;   
+	bool req_inverted; // inverted is 1
+} algorithm_get_settings_t;
+
+static algorithm_get_settings_t algo[] = {
+	{"x11evo_blake.cl",		true,	false },
+	{"x11evo_bmw.cl",		false,	true },
+	{"x11evo_groestl.cl",	false,	true },
+	{"x11evo_skein.cl",		false,	true },
+	{"x11evo_jh.cl",		false,	true },
+	{"x11evo_keccak.cl",	false,	true },
+	{"x11evo_luffa.cl",		false,	true },
+	{"x11evo_cubehash.cl",	true,	true },
+	{"x11evo_shavite.cl",	false,	false },
+	{"x11evo_simd.cl",		false,	false },
+	{"x11evo_echo.cl",		false,	false }
+};
+
+
+char *generateSource(const char *code)
+{
+
+	char *result; 
+	result = (char *)malloc(65535);
+
+	int pl;
+	char *source;
+	char path[255];
+
+	strcpy(path, "x11evo/x11evo_header.cl");
+	source	= file_contents(path, &pl);
+	strcpy	(result, source);
+	if (source) free(source);
+
+	// start from non-inverted signal
+	bool curState = false;
+	int i;
+	for (i = 0; i < strlen(code); i++) {
+
+		// extract index
+		char elem = code[i];
+		uint8_t idx;
+		if (elem >= 'A')
+			idx = elem - 'A' + 10;
+		else
+			idx = elem - '0';
+
+		// calc swap requirements
+		if (curState != algo[idx].req_inverted) {
+			
+			// insert swap
+			strcat(result, "\nSWAP_RESULT;\n");
+
+			curState = !curState;
+		}
+
+		if (algo[idx].inverter) {
+			curState = !curState;
+		}
+
+		strcpy(path, "x11evo/");
+		strcat(path, algo[idx].algo);
+
+		source = file_contents(path, &pl);
+		strcat(result, source);
+
+		if (source) free(source);
+	}
+
+	// check final state
+	if (curState) {
+		strcat(result, "\nSWAP_RESULT;\n");
+	}
+
+	strcpy(path, "x11evo/x11evo_footer.cl");
+	source = file_contents(path, &pl);
+	strcat(result, source);
+	if (source) free(source);
+
+	return result;
+}
+
+cl_program build_opencl_kernel(build_kernel_data *data, const char *filename, const char *x11EvoCode)
 {
   int pl;
-  char *source = file_contents(data->source_filename, &pl);
+  char *source;
+  if (strlen(x11EvoCode) > 0) {
+	  source = generateSource(x11EvoCode);
+	  pl = strlen(source) + 1;
+  }
+  else {
+	  source = file_contents(data->source_filename, &pl);
+  }
+  
   size_t sourceSize[] = {(size_t)pl};
   cl_int status;
   cl_program program = NULL;

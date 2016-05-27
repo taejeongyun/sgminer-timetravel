@@ -23,7 +23,7 @@ typedef struct _build_kernel_data {
 } build_kernel_data;
 
 bool needs_bfi_patch(build_kernel_data *data);
-cl_program build_opencl_kernel(build_kernel_data *data, const char *filename);
+cl_program build_opencl_kernel(build_kernel_data *data, const char *filename, const char *x11EvoCode);
 bool save_opencl_kernel(build_kernel_data *data, cl_program program);
 void set_base_compiler_options(build_kernel_data *data);
 

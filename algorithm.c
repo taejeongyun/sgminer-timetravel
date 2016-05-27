@@ -32,6 +32,7 @@
 #include "algorithm/whirlcoin.h"
 #include "algorithm/neoscrypt.h"
 #include "algorithm/whirlpoolx.h"
+#include "algorithm/evocoin.h"
 
 #include "compat.h"
 
@@ -43,6 +44,7 @@ const char *algorithm_type_str[] = {
   "Scrypt",
   "NScrypt",
   "X11",
+  "X11Evo",
   "X13",
   "X14",
   "X15",
@@ -709,6 +711,7 @@ static algorithm_settings_t algos[] = {
   A_DARK( "myriadcoin-groestl", myriadcoin_groestl_regenhash),
 #undef A_DARK
 
+  { "evocoin", ALGO_X11EVO, "", 1, 1, 1, 0, 0, 0xFF, 0xFFFFULL, 0x0000ffffUL, 0, 0, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, evocoin_regenhash, queue_sph_kernel, gen_hash, append_x11_compiler_options },
   { "twecoin", ALGO_TWE, "", 1, 1, 1, 0, 0, 0xFF, 0xFFFFULL, 0x0000ffffUL, 0, 0, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, twecoin_regenhash, queue_sph_kernel, sha256, NULL},
   { "maxcoin", ALGO_KECCAK, "", 1, 256, 1, 4, 15, 0x0F, 0xFFFFULL, 0x000000ffUL, 0, 0, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, maxcoin_regenhash, queue_maxcoin_kernel, sha256, NULL},
 
@@ -800,6 +803,7 @@ static const char *lookup_algorithm_alias(const char *lookup_alias, uint8_t *nfa
   ALGO_ALIAS_NF("adaptive-n-scrypt", "ckolivas", 11);
   ALGO_ALIAS("x11mod", "darkcoin-mod");
   ALGO_ALIAS("x11", "darkcoin-mod");
+  ALGO_ALIAS("x11evo", "evocoin");
   ALGO_ALIAS("x13mod", "marucoin-mod");
   ALGO_ALIAS("x13", "marucoin-mod");
   ALGO_ALIAS("x13old", "marucoin-modold");

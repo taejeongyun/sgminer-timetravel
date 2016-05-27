@@ -32,6 +32,6 @@ typedef struct __clState {
 } _clState;
 
 extern int clDevicesNum(void);
-extern _clState *initCl(unsigned int gpu, char *name, size_t nameSize, algorithm_t *algorithm);
+extern _clState *initCl(unsigned int gpu, char *name, size_t nameSize, algorithm_t *algorithm, struct thr_info *thr);
 
 #endif /* OCL_H */

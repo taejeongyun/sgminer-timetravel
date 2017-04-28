@@ -26,6 +26,7 @@ typedef enum {
   ALGO_NIST,
   ALGO_FRESH,
   ALGO_WHIRL,
+  ALGO_TIMETRAVEL10,
   ALGO_NEOSCRYPT
 } algorithm_type_t;
 

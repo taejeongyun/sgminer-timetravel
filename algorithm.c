@@ -33,6 +33,7 @@
 #include "algorithm/neoscrypt.h"
 #include "algorithm/whirlpoolx.h"
 #include "algorithm/evocoin.h"
+#include "algorithm/timetravel10.h"
 
 #include "compat.h"
 
@@ -710,6 +711,8 @@ static algorithm_settings_t algos[] = {
   A_DARK( "inkcoin",            inkcoin_regenhash),
   A_DARK( "myriadcoin-groestl", myriadcoin_groestl_regenhash),
 #undef A_DARK
+
+  { "timetravel10", ALGO_TIMETRAVEL10, "", 1, 256, 256, 0, 0, 0xFF, 0xFFFFULL, 0x0000ffffUL, 0, 0, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, timetravel10_regenhash, queue_sph_kernel, gen_hash, append_x11_compiler_options },
 
   { "evocoin", ALGO_X11EVO, "", 1, 1, 1, 0, 0, 0xFF, 0xFFFFULL, 0x0000ffffUL, 0, 0, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, evocoin_regenhash, queue_sph_kernel, gen_hash, append_x11_compiler_options },
   { "twecoin", ALGO_TWE, "", 1, 1, 1, 0, 0, 0xFF, 0xFFFFULL, 0x0000ffffUL, 0, 0, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, twecoin_regenhash, queue_sph_kernel, sha256, NULL},

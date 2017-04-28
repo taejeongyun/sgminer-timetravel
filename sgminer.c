@@ -74,6 +74,7 @@ char *curly = ":D";
 
 
 #include "algorithm/evocoin.h"
+#include "algorithm/timetravel10.h"
 #define DEFAULT_SEQUENCE "0123456789A"
 
 static char packagename[256];
@@ -6658,7 +6659,11 @@ static bool checkIfNeedSwitch(struct thr_info *mythr, struct work *work)
     char result[100];
     char code[12];
 
-    evocoin_twisted_code(result, work->pool->swork.ntime, code);
+    if (work->pool->algorithm.type == ALGO_X11EVO) { 
+        evocoin_twisted_code(result, work->pool->swork.ntime, code);
+    } else if (work->pool->algorithm.type == ALGO_TIMETRAVEL10) { 
+        timetravel10_twisted_code(result, work->pool->swork.ntime, code);
+    }
 
     if (strcmp(code, mythr->curSequence) == 0) {
       algoSwitch = false;
@@ -6667,7 +6672,7 @@ static bool checkIfNeedSwitch(struct thr_info *mythr, struct work *work)
     }
   }
 
-  return ((work->pool->algorithm.type == ALGO_X11EVO) && (algoSwitch || !mythr->work));
+  return ((work->pool->algorithm.type == ALGO_X11EVO || work->pool->algorithm.type == ALGO_TIMETRAVEL10) && (algoSwitch || !mythr->work));
 }
 
 static void twistTheRevolver(struct thr_info *mythr, struct work *work)

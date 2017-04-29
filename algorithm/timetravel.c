@@ -47,8 +47,8 @@
 #include "sph/sph_simd.h"
 #include "sph/sph_echo.h"
 
-#define INITIAL_DATE 1492973331
-#define HASH_FUNC_COUNT 10
+#define INITIAL_DATE 1389040865
+#define HASH_FUNC_COUNT 8
 #define HASH_FUNC_COUNT_PERMUTATIONS 40320
 #define DEFAULT_NTIME "00000000"
 
@@ -151,7 +151,7 @@ static void getAlgoString(char *str, uint32_t count)
 }
 
 
-void timetravel10_twisted_code(char *result, const char *ntime, char *code)
+void timetravel_twisted_code(char *result, const char *ntime, char *code)
 {
 	unsigned char bin[4];
 	uint32_t h32, *be32 = (uint32_t *)bin;
@@ -184,10 +184,10 @@ static inline void xhash(void *state, const void *input , const char* ntime)
 
 	uint32_t hashA[16], hashB[16];
 	memcpy(&ctx, &base_contexts, sizeof(base_contexts));
-	
+
 	char completeCode[64];
 	char resultCode[HASH_FUNC_COUNT + 1];
-	timetravel10_twisted_code(completeCode, ntime, resultCode);
+	timetravel_twisted_code(completeCode, ntime, resultCode);
 
 	int i;
 	const void *in;
@@ -276,7 +276,7 @@ static const uint32_t diff1targ = 0x0000ffff;
 
 
 /* Used externally as confirmation of correct OCL code */
-int timetravel10_test(unsigned char *pdata, const unsigned char *ptarget, uint32_t nonce)
+int timetravel_test(unsigned char *pdata, const unsigned char *ptarget, uint32_t nonce)
 {
 	uint32_t tmp_hash7, Htarg = le32toh(((const uint32_t *)ptarget)[7]);
 	uint32_t data[20], ohash[8];
@@ -297,7 +297,7 @@ int timetravel10_test(unsigned char *pdata, const unsigned char *ptarget, uint32
 	return 1;
 }
 
-void timetravel10_regenhash(struct work *work)
+void timetravel_regenhash(struct work *work)
 {
 	uint32_t data[20];
 	uint32_t *nonce = (uint32_t *)(work->data + 76);
@@ -315,7 +315,7 @@ void timetravel10_regenhash(struct work *work)
 	xhash(ohash, data, work->pool->swork.ntime);
 }
 
-bool scanhash_timetravel10(struct thr_info *thr, const unsigned char __maybe_unused *pmidstate,
+bool scanhash_timetravel(struct thr_info *thr, const unsigned char __maybe_unused *pmidstate,
 	unsigned char *pdata, unsigned char __maybe_unused *phash1,
 	unsigned char __maybe_unused *phash, const unsigned char *ptarget,
 	uint32_t max_nonce, uint32_t *last_nonce, uint32_t n)
@@ -354,7 +354,3 @@ bool scanhash_timetravel10(struct thr_info *thr, const unsigned char __maybe_unu
 
 	return ret;
 }
-
-
-
-
